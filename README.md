@@ -60,22 +60,66 @@ For our third model, we chose to employ transfer learning of ResNet. ResNet is a
 - Test Loss: 0.01806
 
 ## Visualizations:
-Decision Tree
+### Decision Tree
 When running our decision tree model, we trained on different percentages of the Plant Village dataset due to the computational complexity and time involved in training. Below is a visualization of the model accuracy when trained with different percentages of the Plant Village dataset:
 <p align="center">
   <img src="https://github.com/feliciafea/ML-Crop-Disease-Detection/blob/main/assets/decisiontreegraph.png" alt="Example Image">
 </p>
 The above graph displays how the accuracy of our decision tree model improved with larger percents of the total data used. Unfortunately, we were only able to use 75% of the Plant Village dataset due to RAM limitations. These limitations are not present in the next two CNN models.
 
-Naive CNN
+### Naive CNN
 Below is a confusion matrix, loss graph, and accuracy graph for our naive CNN model.
 <p align="center">
   <img src="https://github.com/feliciafea/ML-Crop-Disease-Detection/blob/main/assets/confusionmatrix-naive.png" alt="Example Image">
 </p>
 We can see that our CNN made very few wrong classifications and did not consistently classify one label as another label.
 <p align="center">
-  <img src="https://github.com/feliciafea/ML-Crop-Disease-Detection/blob/main/assets/confusionmatrix-naive.png" alt="Example Image">
+  <img src="https://github.com/feliciafea/ML-Crop-Disease-Detection/blob/main/assets/loss-naive.jpg" alt="Example Image">
 </p>
-
+<p align="center">
+  <img src="https://github.com/feliciafea/ML-Crop-Disease-Detection/blob/main/assets/accuracy-naive.png" alt="Example Image">
+</p>
 From the graphs, we can see that training loss decreased until about 0.5 at epoch 15 or so, and accuracy increased until about 0.9 at epoch 15. Both loss and accuracy mostly plateaued after epoch 15. The validation accuracy was slightly above the training accuracy the entire time, and we believe this is because we applied the random transformations for data augmentation (like random rotation and color jittering) only on the training set and not on the validation set. Since validation accuracy was not significantly lower than training accuracy for the entirety of training, this means our model did not overfit.
 
+### ResNet CNN
+Confusion Matrix
+Below is a confusion matrix, loss graph, and accuracy graph for our naive CNN model.
+<p align="center">
+  <img src="https://github.com/feliciafea/ML-Crop-Disease-Detection/blob/main/assets/confusion-resnet.jpg" alt="Example Image">
+</p>
+We can see that ResNet made extremely few wrong classifications and did not consistently classify one label as another label.
+<p align="center">
+  <img src="https://github.com/feliciafea/ML-Crop-Disease-Detection/blob/main/assets/loss-resnet.jpg" alt="Example Image">
+</p>
+<p align="center">
+  <img src="https://github.com/feliciafea/ML-Crop-Disease-Detection/blob/main/assets/accuracy-resnet.png" alt="Example Image">
+</p>
+From the graphs, we can see that training loss decreased until about 0.02 at epoch 15 or so, and accuracy increased until about 0.99 at epoch 15. Both loss and accuracy mostly plateaued after epoch 15. Training and validation accuracy were very similar for the entirety of training, meaning that our model did not overfit
+
+# Analysis:
+## Decision Tree
+As seen in our metrics, though the decision tree classifier made significant progress from randomly guessing what disease a plant has, its accuracy is still relatively low. This could be due to several reasons. Firstly, decision tree models are not the best choice for image data, as image data is high-dimensional (for example, our 256 x 256 pixel dataset led to 65,536 features for the decision tree). Additionally, decision trees consider each feature separately without incorporating spatial information, which is highly ineffective for image data. Finally, since our preprocessing mechanism involved gray-scaling the images, this may have led to loss of some valuable information that resulted in a lower accuracy of the model. Thus, the relatively low accuracy for the decision tree trained on PlantVillage is relatively expected.
+
+## Naive CNN
+As seen in our metrics, the naive CNN model made significant progress from our decision tree model, and achieved an accuracy of 89.4% on the testing dataset. The high accuracy can be expected from a CNN, as they are especially crafted to be able to detect patterns in images (using convolutional layers/filters). However, the accuracy of our naive CNN was lower than applying transfer learning using ResNet; this is likely due to the higher complexity of ResNet when compared to our naive CNN, which may not have been able to capture all the pieces of information in the images necessary to correctly classify them, and the fact that ResNet had pretrained weights on the Image Net dataset (which is much larger than Plant Village).
+
+## ResNet CNN
+As seen in our metrics, the ResNet model was the best performing model compared to the decision tree and naive CNN. After being trained 25 epochs, the ResNet achieved an accuracy of 99.44% on the testing dataset. The extremely high accuracy of the ResNet model is due to its higher complexity and the fact that we utilized transfer learning instead of training the CNN from scratch. As the weights we used were from the ResNet being trained on the ImageNet dataset, the ResNet had already learned many features that were useful in classifying plant diseases as well. Thus, 25 epochs of training were enough for the ResNet to achieve an extremely high accuracy.
+
+## Comparison of Models
+In terms of accuracy on the testing dataset, the ordering of the models in terms of highest to lowest accuracy is the ResNet CNN, the naive CNN, and then the decision tree. The decision tree model was the simplest model out of the three, which is a large factor for why it had the lowest accuracy. Decision trees are not optimized to handle image data, unlike CNNs. Comparing the naive CNN and the ResNet CNN, transfer learning was more successful due to the fact that ResNet was already pre-trained before we performed transfer learning on the Plant Village Dataset. The ResNet architecture is also more complex compared to our naive CNN, meaning it has more room to learn patterns in the dataset.
+
+## Evaluation of Goals
+At the beginning of the project, we aimed to have a 90% classification accuracy for healthy vs. unhealthy, as well as precision/recall rates and an F1 score above 0.9. We were able to achieve and surpass our goals, as ResNet was able to hit an accuracy, precision rate, recall rate, and F1 score above 0.99, and our own CNN architecture had an accuracy, precision rate, recall rate, and F1 score of above 0.89, almost reaching our goal. Also, we originally only planned to classify healthy vs. unhealthy, but we were able to train our models to classify the specific disease labels given in the dataset, which is even more specific than we planned. Overall, we were successful in reaching our original goals.
+
+# Next Steps
+Our next steps involve attempting to improve our naive CNN model so that its accuracy is higher than our initial goal of 90%. We plan to do this by adding more layers to the CNN model. Also, though we have only been utilizing the Plant Village dataset so far, we would like to build a larger set of plant disease images, so that our model will be more effective at predicting diseases from images of plants in the real world. We also plan to investigate other pre-processing mechanisms; for example, we plan to run PCA (Principal Component Analysis) on the images to reduce the complexity of the input space and see how that affects accuracy.
+
+# References
+[1] Hassan, S. M., & Maji, A. K. (2022). Plant disease identification using a novel convolutional neural network. IEEE Access, 10, 5390–5401. https://doi.org/10.1109/access.2022.3141371
+
+[2] Kulkarni, P., Karwande, A., Kolhe, T., Kamble, S., Joshi, A., & Wyawahare, M. (2021). Plant Disease Detection Using Image Processing and Machine Learning. https://doi.org/10.48550/arXiv.2106.10698
+
+[3] Shoaib, M., Shah, B., EI-Sappagh, S., Ali, A., Ullah, A., Alenezi, F., Gechev, T., Hussain, T., & Ali, F. (2023). An advanced deep learning models-based Plant Disease Detection: A review of recent research. Frontiers in Plant Science, 14. https://doi.org/10.3389/fpls.2023.1158933
+
+[4] Kulkarni, P., Karwande, A., Kolhe, T., Kamble, S., Joshi, A., & Wyawahare, M. (2021). Plant disease detection using image processing and machine learning. arXiv preprint arXiv:2106.10698
